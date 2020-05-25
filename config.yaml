@@ -1,0 +1,21 @@
+# VCenter info goes here
+vcenter: vcenter.domain.com
+vcuserid: "administrator@vsphere.local"
+vcpassword: "Passw0rd"
+# NSX Manager info goes here
+nsxmgr: nsxmanager.domain.com
+userid: "admin"
+password: "VMware1!Vmware1!"
+
+#Edge nw info goes here
+edge_ip_pool_start_ip: 192.168.11.20
+edge_ip_pool_end_ip: 192.168.11.30
+edge_ip_pool_def_gw: 192.168.11.1
+edge_ip_pool_def_cidr: 192.168.11.0/24
+edge_tep_vlan: 15
+#ESX Host nw info goes here
+host_ip_pool_start_ip: 192.168.12.20
+host_ip_pool_end_ip: 192.168.12.30
+host_ip_pool_def_gw: 192.168.12.1
+host_ip_pool_def_cidr: 192.168.12.0/24
+host_tep_vlan: 16
