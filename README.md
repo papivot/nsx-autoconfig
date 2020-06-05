@@ -12,10 +12,10 @@ Steps -
 6. Create Edge Uplink Profile
 7. Create Host Uplink Profile
 8. Create Transport Node Profile
-9. Attach Transport Node Profile to ESXi hosts (WIP)
-10. Deploy  Transport Node (WIP)
-* Deploy Edge
-* Deploy ESXi
+9. Attach Transport Node Profile to ESXi hosts
+10. Deploy Host Transport Node ESXi 
+11. Deploy Edge Transport Node (WIP)
+12. Create Edge cluster (WIP)
 11. Validate Tunnel connectivity (WIP)
 12. Create T0 Router (WIP)
 13. Create Segment (WIP)
