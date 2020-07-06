@@ -1,11 +1,11 @@
 # VCenter info goes here
-vcenter: vcenter.domain.com
+vcenter: 192.168.6.50
 vcuserid: "administrator@vsphere.local"
 vcpassword: "Passw0rd"
 # NSX Manager info goes here
-nsxmgr: nsxmanager.domain.com
+nsxmgr: 192.168.6.54
 userid: "admin"
-password: "VMware1!Vmware1!"
+password: "VMware1!VMware1!"
 
 #Edge nw info goes here
 edge_ip_pool_start_ip: 192.168.11.20
@@ -19,3 +19,24 @@ host_ip_pool_end_ip: 192.168.12.30
 host_ip_pool_def_gw: 192.168.12.1
 host_ip_pool_def_cidr: 192.168.12.0/24
 host_tep_vlan: 16
+
+#Transport zone info goes here. Use defaults if possible. 
+#Defaults are  -
+#tz_vlan: nsx-vlan-transportzone
+#tz_overlay: nsx-overlay-transportzone
+#Uncomment to use your own values
+tz_vlan:  TZ-VLAN
+tz_overlay: TZ-Overlay
+
+edge_cluster: Edge-Cluster-01
+
+#TO Config goes here
+segment: WCP-Segment
+segment_vlanids:
+  - 0
+t0_name: WCP-T0-Gateway
+t0_gateway_ip: 192.168.6.57
+t0_gateway_cidr: 24
+t0_gateway_static_routename: "WCP-Static-Route"
+t0_gateway_static_routenw: "0.0.0.0/0"
+t0_gateway_static_routeaddr: 192.168.6.1
