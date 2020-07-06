@@ -16,6 +16,6 @@ Steps -
 10. Deploy Host Transport Node ESXi 
 11. Deploy Edge Transport Node (WIP)
 12. Create Edge cluster (WIP)
-11. Validate Tunnel connectivity (WIP)
-12. Create T0 Router (WIP)
-13. Create Segment (WIP)
+11. Validate Tunnel connectivity
+12. Create T0 Router
+13. Create Segment
