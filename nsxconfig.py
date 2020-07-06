@@ -259,6 +259,133 @@ def configure_transport_node_collections(cc_id,tnp_id):
         results = json.loads(json_response.text)
         return results["id"]
 
+def get_tier0():
+    json_response = s.get('https://'+nsxmgr+'/policy/api/v1/infra/tier-0s',auth=HTTPBasicAuth(userid,password))
+    if not json_response.ok:
+        print ("Session creation is failed, please check nsxmgr connection")
+        return 0
+    else:
+        results = json.loads(json_response.text)
+        print (json.dumps(results,indent=2,sort_keys=True))
+        return 1
+
+def create_config_tier0(t0_displayname, edge_clustername, infrasegment, t0_ip, t0_cidr, route_name, route_nw, route_gw):
+    json_response = s.get('https://'+nsxmgr+'/policy/api/v1/infra/sites/default/enforcement-points/default/edge-clusters',auth=HTTPBasicAuth(userid,password))
+    if not json_response.ok:
+        print ("Session creation is failed, please check nsxmgr connection")
+        return 0
+    else:
+        results = json.loads(json_response.text)
+        for result in results["results"]:
+            if result["display_name"] == edge_clustername:
+                path = result["path"]
+                edgeclusterid = result["id"]
+                break
+    
+    json_response = s.get('https://'+nsxmgr+'/api/v1/edge-clusters',auth=HTTPBasicAuth(userid,password))
+    if not json_response.ok:
+        print ("Session creation is failed, please check nsxmgr connection")
+        return 0
+    else:
+        results = json.loads(json_response.text)
+        for result in results["results"]:
+            if result["id"] == edgeclusterid:
+                transport_node_id = result["members"][0]["transport_node_id"]
+                break
+
+    t0_payload = dict()
+    t0_payload["disable_firewall"] = False
+    t0_payload["display_name"] = t0_displayname
+    t0_payload["failover_mode"] = "NON_PREEMPTIVE"
+    t0_payload["ha_mode"] = "ACTIVE_STANDBY"
+    t0_payload["id"] = t0_displayname
+    t0_payload["resource_type"] = "Tier0"
+    json_payload = json.loads(json.dumps(t0_payload))
+    json_response = s.patch('https://'+nsxmgr+'/policy/api/v1/infra/tier-0s/'+t0_displayname,auth=HTTPBasicAuth(userid,password),json=json_payload)
+    if not json_response.ok:
+        print ("Unable to create T0 :  "+json_response.content.decode("utf-8"))
+        return 0
+    else:
+        print ("Successfully created/updated T0 router: "+t0_displayname)
+
+    locale_payload = dict()
+    locale_payload["resource_type"] = "LocaleServices"
+    locale_payload["edge_cluster_path"] = path
+    locale_payload["display_name"] = "wcp_default"
+    json_payload = json.loads(json.dumps(locale_payload))
+    json_response = s.patch('https://'+nsxmgr+'/policy/api/v1/infra/tier-0s/'+t0_displayname+"/locale-services/wcp_default",auth=HTTPBasicAuth(userid,password),json=json_payload)
+    if not json_response.ok:
+        print ("Unable to attach edge cluster to T0 :  "+json_response.content.decode("utf-8"))
+        return 0
+    else:
+        print ("Successfully created/updated Locale Service: wcp_default")
+
+    interface_payload = dict()
+    interface_payload["resource_type"] = "Tier0Interface"
+    interface_payload["type"] = "EXTERNAL"
+    interface_payload["subnets"] = [dict()]
+    interface_payload["subnets"][0]["ip_addresses"] = []
+    interface_payload["subnets"][0]["ip_addresses"].append(t0_ip)
+    interface_payload["subnets"][0]["prefix_len"] = t0_cidr
+    interface_payload["segment_path"] = "/infra/segments/"+infrasegment
+    interface_payload["edge_path"] = path +"/edge-nodes/"+ transport_node_id
+    json_payload = json.loads(json.dumps(interface_payload))
+    json_response = s.patch('https://'+nsxmgr+'/policy/api/v1/infra/tier-0s/'+t0_displayname+"/locale-services/wcp_default/interfaces/to_internet",auth=HTTPBasicAuth(userid,password),json=json_payload)
+    if not json_response.ok:
+        print ("Unable to add IP address :  "+json_response.content.decode("utf-8"))
+        return 0
+    else:
+        print ("Successfully created/updated uplink interface: to_internet")
+
+    route_payload = dict()
+    route_payload["display_name"] = route_name
+    route_payload["id"] = route_name
+    route_payload["network"] = route_nw
+    route_payload["next_hops"] = [ dict()]
+    route_payload["next_hops"][0]["admin_distance"] = 1
+    route_payload["next_hops"][0]["ip_address"] = route_gw
+    route_payload["next_hops"][0]["scope"] = []
+    route_payload["next_hops"][0]["scope"].append("/infra/tier-0s/"+t0_displayname+"/locale-services/wcp_default/interfaces/to_internet")
+    route_payload["resource_type"] = "StaticRoutes"
+    json_payload = json.loads(json.dumps(route_payload))
+    json_response = s.patch('https://'+nsxmgr+'/policy/api/v1/infra/tier-0s/'+t0_displayname+"/static-routes/"+route_name, auth=HTTPBasicAuth(userid,password),json=json_payload)
+    if not json_response.ok:
+        print ("Unable to add IP address :  "+json_response.content.decode("utf-8"))
+        return 0
+    else:
+        print ("Successfully created/updated uplink route: "+route_name)
+        return 1    
+
+def create_infra_segment(infrasegment, infratz_vlan, infrasegment_vlanids):
+    json_response = s.get('https://'+nsxmgr+'/policy/api/v1/infra/sites/default/enforcement-points/default/transport-zones',auth=HTTPBasicAuth(userid,password))
+    if not json_response.ok:
+        print ("Session creation is failed, please check nsxmgr connection")
+        return 0
+    else:
+        results = json.loads(json_response.text)
+        for result in results["results"]:
+            if result["display_name"] == infratz_vlan:
+                path = result["path"]
+                break
+    seg_payload = dict()
+    seg_payload["type"] = "DISCONNECTED"
+    seg_payload["vlan_ids"] = [] 
+    seg_payload["vlan_ids"] = infrasegment_vlanids
+    seg_payload["transport_zone_path"] = path
+    seg_payload["resource_type"] = "Segment"
+    seg_payload["display_name"] = infrasegment
+    seg_payload["id"] = infrasegment
+    seg_payload["admin_state"] = "UP"
+
+    json_payload = json.loads(json.dumps(seg_payload))
+    json_response = s.patch('https://'+nsxmgr+'/policy/api/v1/infra/segments/'+infrasegment,auth=HTTPBasicAuth(userid,password),json=json_payload)
+    if not json_response.ok:
+        print ("Unable to create segments :  "+json_response.content.decode("utf-8"))
+        return 0
+    else:
+        print ("Successfully created/updated segment: "+infrasegment)
+        return 1
+
 
 s = "Global"
 s=requests.Session()
@@ -272,8 +399,8 @@ with open(filename,) as f:
         vcenter = yamldoc["vcenter"]
         vcuserid = yamldoc["vcuserid"]
         vcpassword = yamldoc["vcpassword"]
-        node_cluster = yamldoc["node_cluster"] 
-        node_datacenter =  yamldoc["node_datacenter"]
+#        node_cluster = yamldoc["node_cluster"] 
+#        node_datacenter =  yamldoc["node_datacenter"]
 
         nsxmgr = "Global"
         userid = "Global"
@@ -281,14 +408,16 @@ with open(filename,) as f:
         nsxmgr_hostname = yamldoc["nsxmgr"]
         userid = yamldoc["userid"]
         password = yamldoc["password"]
-        nsx_datastore =  yamldoc["nsx_datastore"]
-        nsx_network = yamldoc["nsx_network"]
-        nsxmgr = yamldoc["nsx_ip"]
-        nsx_subnet_mask = yamldoc["nsx_subnet_mask"]
-        nsx_gateway = yamldoc["nsx_gateway"]
-        nsx_domain_name = yamldoc["nsx_domain_name"]
-        nsx_dns = yamldoc["nsx_dns"]
-        nsx_ntp = yamldoc["nsx_ntp"]
+#        nsx_datastore =  yamldoc["nsx_datastore"]
+#        nsx_network = yamldoc["nsx_network"]
+#        nsxmgr = yamldoc["nsx_ip"]
+        nsxmgr = yamldoc["nsxmgr"]
+        
+#        nsx_subnet_mask = yamldoc["nsx_subnet_mask"]
+#        nsx_gateway = yamldoc["nsx_gateway"]
+#        nsx_domain_name = yamldoc["nsx_domain_name"]
+#        nsx_dns = yamldoc["nsx_dns"]
+#        nsx_ntp = yamldoc["nsx_ntp"]
 
         edge_ip_pool_start_ip = yamldoc["edge_ip_pool_start_ip"]
         edge_ip_pool_end_ip = yamldoc["edge_ip_pool_end_ip"]
@@ -300,6 +429,19 @@ with open(filename,) as f:
         host_ip_pool_def_gw = yamldoc["host_ip_pool_def_gw"]
         host_ip_pool_def_cidr = yamldoc["host_ip_pool_def_cidr"]
         host_tep_vlan = yamldoc["host_tep_vlan"]
+
+        edge_cluster = yamldoc["edge_cluster"]
+
+        tz_vlan = yamldoc["tz_vlan"]
+        tz_overlay = yamldoc["tz_overlay"]
+        segment = yamldoc["segment"]
+        segment_vlanids = yamldoc["segment_vlanids"]
+        t0_name = yamldoc["t0_name"]
+        t0_gateway_ip = yamldoc["t0_gateway_ip"]
+        t0_gateway_cidr = yamldoc["t0_gateway_cidr"]
+        t0_gateway_static_routename = yamldoc["t0_gateway_static_routename"]
+        t0_gateway_static_routenw = yamldoc["t0_gateway_static_routenw"]
+        t0_gateway_static_routeaddr = yamldoc["t0_gateway_static_routeaddr"]
 
       #  install_status = install_nsx_ova(vcenter)
       #  print (install_status)
@@ -323,71 +465,78 @@ with open(filename,) as f:
 #        get_transport_node()
         
         # Get SHA256 thumbpring and register compute manager
-        thumbprint = get_vcenter_thumbprint(vcenter)
-        if not thumbprint:
-            print ("Error getting VCenter thumbprint. Check connection")
-            sys.exit(1)
-        vcenter_id = register_vcenter(vcenter,vcuserid,vcpassword,thumbprint)
-        if not vcenter_id:
-            print ("Error Registering vcenter")
-            sys.exit(1)
-        print ("VCenter registerted to NSX manager")
+#        thumbprint = get_vcenter_thumbprint(vcenter)
+#        if not thumbprint:
+#            print ("Error getting VCenter thumbprint. Check connection")
+#            sys.exit(1)
+#        vcenter_id = register_vcenter(vcenter,vcuserid,vcpassword,thumbprint)
+#        if not vcenter_id:
+#            print ("Error Registering vcenter")
+#            sys.exit(1)
+#        print ("VCenter registerted to NSX manager")
 
         # Get IDs of default Transport Zones
-        tz_overlay_id = get_transport_zone("OVERLAY")
-        tz_vlan_id = get_transport_zone("VLAN")
+#        tz_overlay_id = get_transport_zone("OVERLAY")
+#        tz_vlan_id = get_transport_zone("VLAN")
 
         # Create IP Pools for Host and Edge TEPs
-        if not create_ipaddr_pool("HOST_IP_POOL","IP Pool for Host TEP Interface",host_ip_pool_start_ip,host_ip_pool_end_ip,host_ip_pool_def_gw,host_ip_pool_def_cidr):
-            print ("Error creating IP POOL")
-            sys.exit(1)
-        print ("Host IP Pool created")
-        if not create_ipaddr_pool("EDGE_IP_POOL","IP Pool for Edge TEP Interface",edge_ip_pool_start_ip,edge_ip_pool_end_ip,edge_ip_pool_def_gw,edge_ip_pool_def_cidr):
-            print ("Error creating IP POOL")
-            sys.exit(1)
-        print ("Edge IP Pool created")
+#        if not create_ipaddr_pool("HOST_IP_POOL","IP Pool for Host TEP Interface",host_ip_pool_start_ip,host_ip_pool_end_ip,host_ip_pool_def_gw,host_ip_pool_def_cidr):
+#            print ("Error creating IP POOL")
+#            sys.exit(1)
+#        print ("Host IP Pool created")
+#        if not create_ipaddr_pool("EDGE_IP_POOL","IP Pool for Edge TEP Interface",edge_ip_pool_start_ip,edge_ip_pool_end_ip,edge_ip_pool_def_gw,edge_ip_pool_def_cidr):
+#            print ("Error creating IP POOL")
+#            sys.exit(1)
+#        print ("Edge IP Pool created")
 
         # Create Host and edge uplink profiles
-        host_profile_id = create_uplink_profile("nsx-demo-uplink-hostswitch-profile",host_tep_vlan)
-        if not host_profile_id:
-            print ("Error creatin host profile")
-            sys.exit(1)
-        print ("Host Switch Profile created")
-        edge_profile_id = create_uplink_profile("nsx-demo-uplink-edge-profile",edge_tep_vlan)
-        if not edge_profile_id:
-            print ("Error creatin edge profile")
-            sys.exit(1)
-        print ("Edge Switch Profile created")
+#        host_profile_id = create_uplink_profile("nsx-demo-uplink-hostswitch-profile",host_tep_vlan)
+#        if not host_profile_id:
+#            print ("Error creatin host profile")
+#            sys.exit(1)
+#        print ("Host Switch Profile created")
+#        edge_profile_id = create_uplink_profile("nsx-demo-uplink-edge-profile",edge_tep_vlan)
+#        if not edge_profile_id:
+#            print ("Error creatin edge profile")
+#            sys.exit(1)
+#        print ("Edge Switch Profile created")
 
         # Retrive Host and Edge IP pools IDs
-        host_ip_pool_id = get_ipaddr_pool("HOST_IP_POOL")
-        while not host_ip_pool_id:
-            print ("Waiting for Host IP Pools to become ready")
-            time.sleep(5)
-            host_ip_pool_id = get_ipaddr_pool("HOST_IP_POOL")
+#        host_ip_pool_id = get_ipaddr_pool("HOST_IP_POOL")
+#        while not host_ip_pool_id:
+#            print ("Waiting for Host IP Pools to become ready")
+#            time.sleep(5)
+#            host_ip_pool_id = get_ipaddr_pool("HOST_IP_POOL")
 
-        edge_ip_pool_id = get_ipaddr_pool("EDGE_IP_POOL")
-        while not edge_ip_pool_id:
-            print ("Waiting for Edge IP Pool to become ready")
-            time.sleep(5)
-            edge_ip_pool_id = get_ipaddr_pool("EDGE_IP_POOL")
+#        edge_ip_pool_id = get_ipaddr_pool("EDGE_IP_POOL")
+#        while not edge_ip_pool_id:
+#            print ("Waiting for Edge IP Pool to become ready")
+#            time.sleep(5)
+#            edge_ip_pool_id = get_ipaddr_pool("EDGE_IP_POOL")
 
         # Create Host TN profile
-        transport_node_profile_id = create_transport_node_profile("ESX_TN_Profile", "STANDARD", "NVDS",host_profile_id,tz_overlay_id,host_ip_pool_id)
-        if not transport_node_profile_id:
-            print ("Error creating transport node host profile")
-            sys.exit(1)
-        print ("Transport Node Switch Profile created")
+#        transport_node_profile_id = create_transport_node_profile("ESX_TN_Profile", "STANDARD", "NVDS",host_profile_id,tz_overlay_id,host_ip_pool_id)
+#        if not transport_node_profile_id:
+#            print ("Error creating transport node host profile")
+#            sys.exit(1)
+#        print ("Transport Node Switch Profile created")
 
-        compute_collection_id = get_compute_collection_id(node_cluster)
-        while not compute_collection_id:
-            print ("Waiting for Compute Manager to become ready")
-            time.sleep(5)
-            compute_collection_id = get_compute_collection_id(node_cluster)
+#        compute_collection_id = get_compute_collection_id(node_cluster)
+#        while not compute_collection_id:
+#            print ("Waiting for Compute Manager to become ready")
+#            time.sleep(5)
+#            compute_collection_id = get_compute_collection_id(node_cluster)
         
-        transport_node_collection_id = configure_transport_node_collections(compute_collection_id,transport_node_profile_id)
-        if not transport_node_collection_id:
-            print ("Error configuring ESXi servers as transport nodes")
-            sys.exit(1)
-        print ("Host Transport Node configuration started")
+#        transport_node_collection_id = configure_transport_node_collections(compute_collection_id,transport_node_profile_id)
+#        if not transport_node_collection_id:
+#            print ("Error configuring ESXi servers as transport nodes")
+#            sys.exit(1)
+#        print ("Host Transport Node configuration started")
         # Configure Edge 
+        #get_infra_segments()
+
+        # Configure Pacific segment 
+        segment_id = create_infra_segment(segment, tz_vlan, segment_vlanids)
+
+        # Configure T0 router
+        t0s = create_config_tier0(t0_name, edge_cluster, segment, t0_gateway_ip, t0_gateway_cidr, t0_gateway_static_routename, t0_gateway_static_routenw, t0_gateway_static_routeaddr)
