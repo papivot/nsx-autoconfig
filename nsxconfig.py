@@ -57,16 +57,18 @@ def install_nsx_ova(vcenter_name):
     return status
 
 def install_edge_ova(vcenter_name):
+    #Windows needs "" for passwords with ! in it.
+    #Mac/Linux needs '' for passwords with ! in it. 
     deployedge = f'ovftool --name={edge_hostname} --noSSLVerify --skipManifestCheck --powerOn --acceptAllEulas --allowExtraConfig --X:injectOvfEnv --X:logFile=nsxt-edge-ovf.log \
         --deploymentOption=large --diskMode=thin --datastore="{edge_datastore}" --ipProtocol=IPv4 --ipAllocationPolicy=fixedPolicy \
         --net:"Network 0={edge_network}" --net:"Network 1={edge_tep_network}" --net:"Network 2={edge_network}" --net:"Network 3={edge_network}"  \
         --prop:nsx_ip_0={edge_ip} --prop:nsx_hostname={edge_hostname} --prop:nsx_netmask_0={edge_subnet_mask}  --prop:nsx_gateway_0={edge_gateway}  \
         --prop:nsx_dns1_0={edge_dns} --prop:nsx_ntp_0={edge_ntp} --prop:nsx_domain_0={edge_domain_name}  \
-        --prop:mpUser=admin --prop:mpPassword={password} --prop:mpIp={nsxmgr} --prop:mpThumbprint=af376b7dd30b155a645e2f5c18ae3dec4090b270c4d38a66f648a995183b1b73 \
-        --prop:nsx_isSSHEnabled=True --prop:nsx_allowSSHRootLogin=True --prop:nsx_passwd_0={edge_password} \
-        --prop:nsx_cli_username={edge_userid} --prop:nsx_cli_passwd_0={edge_password} \
-        --prop:nsx_cli_audit_username=audit --prop:nsx_cli_audit_passwd_0={edge_password} \
-        {edge_ova} vi://{vcuserid}:{vcpassword}@{vcenter_name}/{node_datacenter}/host/{node_cluster}/ '
+        --prop:mpUser=admin --prop:mpPassword="{password}" --prop:mpIp={nsxmgr} --prop:mpThumbprint=af376b7dd30b155a645e2f5c18ae3dec4090b270c4d38a66f648a995183b1b73 \
+        --prop:nsx_isSSHEnabled=True --prop:nsx_allowSSHRootLogin=True --prop:nsx_passwd_0="{edge_password}" \
+        --prop:nsx_cli_username={edge_userid} --prop:nsx_cli_passwd_0="{edge_password}" \
+        --prop:nsx_cli_audit_username=audit --prop:nsx_cli_audit_passwd_0="{edge_password}" \
+        {edge_ova} vi://{vcuserid}:"{vcpassword}"@{vcenter_name}/{node_datacenter}/host/{node_cluster}/ '
 
     print ("Deploying NSX Edge using ovftools")
     status = os.system(deployedge)
