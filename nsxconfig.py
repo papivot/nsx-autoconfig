@@ -24,6 +24,23 @@ filename = "config.yaml"
 def colon(s):
     return ':'.join(s[i:i+2] for i in range(0, len(s), 2))
 
+def get_server_thumbprint(vcenter_name):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(1)
+    wrappedSocket = ssl.wrap_socket(sock)
+
+    try:
+        wrappedSocket.connect((vcenter_name, 443))
+    except:
+        wrappedSocket.close()
+        return 0
+    else:
+        der_cert_bin = wrappedSocket.getpeercert(True)
+        sha256 = hashlib.sha256(der_cert_bin).hexdigest()
+        formatted_sha256 = colon(sha256)
+        wrappedSocket.close()
+        return formatted_sha256
+
 def install_nsx_ova(vcenter_name):
     deploynsx = f'ovftool --name={nsxmgr_hostname} --noSSLVerify --skipManifestCheck --powerOn --acceptAllEulas --allowExtraConfig \
         --X:injectOvfEnv --X:logFile=nsxt-manager-ovf.log --deploymentOption=small \
@@ -33,34 +50,32 @@ def install_nsx_ova(vcenter_name):
         --prop:nsx_ntp_0={nsx_ntp} --prop:nsx_domain_0={nsx_domain_name} --prop:nsx_passwd_0={password} \
         --prop:nsx_cli_passwd_0={password} --prop:nsx_cli_audit_passwd_0={password} --prop:nsx_isSSHEnabled=True \
         --prop:nsx_allowSSHRootLogin=True \
-        nsx-unified-appliance-3.0.0.0.0.15946739.ova vi://{vcuserid}:{vcpassword}@{vcenter_name}/{node_datacenter}/host/{node_cluster}/ '
+        {nsx_ova} vi://{vcuserid}:{vcpassword}@{vcenter_name}/{node_datacenter}/host/{node_cluster}/ '
 
     print ("Deploying NSX Manager using ovftools")
     status = os.system(deploynsx)
+    return status
+
+def install_edge_ova(vcenter_name):
+    deployedge = f'ovftool --name={edge_hostname} --noSSLVerify --skipManifestCheck --powerOn --acceptAllEulas --allowExtraConfig --X:injectOvfEnv --X:logFile=nsxt-edge-ovf.log \
+        --deploymentOption=large --diskMode=thin --datastore="{edge_datastore}" --ipProtocol=IPv4 --ipAllocationPolicy=fixedPolicy \
+        --net:"Network 0={edge_network}" --net:"Network 1={edge_tep_network}" --net:"Network 2={edge_network}" --net:"Network 3={edge_network}"  \
+        --prop:nsx_ip_0={edge_ip} --prop:nsx_hostname={edge_hostname} --prop:nsx_netmask_0={edge_subnet_mask}  --prop:nsx_gateway_0={edge_gateway}  \
+        --prop:nsx_dns1_0={edge_dns} --prop:nsx_ntp_0={edge_ntp} --prop:nsx_domain_0={edge_domain_name}  \
+        --prop:mpUser=admin --prop:mpPassword={password} --prop:mpIp={nsxmgr} --prop:mpThumbprint=af376b7dd30b155a645e2f5c18ae3dec4090b270c4d38a66f648a995183b1b73 \
+        --prop:nsx_isSSHEnabled=True --prop:nsx_allowSSHRootLogin=True --prop:nsx_passwd_0={edge_password} \
+        --prop:nsx_cli_username={edge_userid} --prop:nsx_cli_passwd_0={edge_password} \
+        --prop:nsx_cli_audit_username=audit --prop:nsx_cli_audit_passwd_0={edge_password} \
+        {edge_ova} vi://{vcuserid}:{vcpassword}@{vcenter_name}/{node_datacenter}/host/{node_cluster}/ '
+
+    print ("Deploying NSX Edge using ovftools")
+    status = os.system(deployedge)
     return status
 
 def ping_nsx_manager(host):
     param = '-n' if platform.system().lower()=='windows' else '-c'
     command = ['ping', param, '1', host]
     return subprocess.call(command) == 0
-
-def get_vcenter_thumbprint(vcenter_name):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(1)
-    wrappedSocket = ssl.wrap_socket(sock)
-
-    try:
-        wrappedSocket.connect((vcenter_name, 443))
-    except:
-        response = False
-        wrappedSocket.close()
-        return 0
-    else:
-        der_cert_bin = wrappedSocket.getpeercert(True)
-        sha256 = hashlib.sha256(der_cert_bin).hexdigest()
-        formatted_sha256 = colon(sha256)
-        wrappedSocket.close()
-        return formatted_sha256
 
 def register_vcenter(vcenter_name,user,passwd,sha256_tp):
     vcenter_payload = dict()
@@ -386,7 +401,6 @@ def create_infra_segment(infrasegment, infratz_vlan, infrasegment_vlanids):
         print ("Successfully created/updated segment: "+infrasegment)
         return 1
 
-
 s = "Global"
 s=requests.Session()
 s.verify=False
@@ -395,29 +409,47 @@ with open(filename,) as f:
     yamldocs = yaml.load_all(f, Loader=yaml.FullLoader)
     for yamldoc in yamldocs:
 
+        nsxmgr = "Global"
+        userid = "Global"
+        password = "Global"
+       
         # Read values from YAML
         vcenter = yamldoc["vcenter"]
         vcuserid = yamldoc["vcuserid"]
         vcpassword = yamldoc["vcpassword"]
-#        node_cluster = yamldoc["node_cluster"] 
-#        node_datacenter =  yamldoc["node_datacenter"]
+        node_cluster = yamldoc["node_cluster"] 
+        node_datacenter =  yamldoc["node_datacenter"]
 
-        nsxmgr = "Global"
-        userid = "Global"
-        password = "Global"
-        nsxmgr_hostname = yamldoc["nsxmgr"]
-        userid = yamldoc["userid"]
-        password = yamldoc["password"]
-#        nsx_datastore =  yamldoc["nsx_datastore"]
-#        nsx_network = yamldoc["nsx_network"]
-#        nsxmgr = yamldoc["nsx_ip"]
-        nsxmgr = yamldoc["nsxmgr"]
-        
-#        nsx_subnet_mask = yamldoc["nsx_subnet_mask"]
-#        nsx_gateway = yamldoc["nsx_gateway"]
-#        nsx_domain_name = yamldoc["nsx_domain_name"]
-#        nsx_dns = yamldoc["nsx_dns"]
-#        nsx_ntp = yamldoc["nsx_ntp"]
+        workload_vc = yamldoc["workload_vc"]
+        workload_vc_uid = yamldoc["workload_vc_uid"]
+        workload_vc_pwd = yamldoc["workload_vc_pwd"]
+
+        nsxmgr_hostname = yamldoc["nsxmgr_hostname"] 
+        nsx_datastore = yamldoc["nsx_datastore"] 
+        nsx_network = yamldoc["nsx_network"] 
+        nsxmgr = yamldoc["nsxmgr"] 
+        nsx_subnet_mask = yamldoc["nsx_subnet_mask"] 
+        nsx_gateway = yamldoc["nsx_gateway"] 
+        nsx_dns = yamldoc["nsx_dns"] 
+        nsx_ntp = yamldoc["nsx_ntp"] 
+        nsx_domain_name = yamldoc["nsx_domain_name"] 
+        userid = yamldoc["userid"] 
+        password = yamldoc["password"] 
+        nsx_ova = yamldoc["nsx_ova"] 
+
+        edge_hostname = yamldoc["edge_hostname"] 
+        edge_datastore = yamldoc["edge_datastore"] 
+        edge_network = yamldoc["edge_network"]
+        edge_tep_network = yamldoc["edge_tep_network"] 
+        edge_ip = yamldoc["edge_ip"] 
+        edge_subnet_mask = yamldoc["edge_subnet_mask"] 
+        edge_gateway = yamldoc["edge_gateway"] 
+        edge_dns = yamldoc["edge_dns"] 
+        edge_ntp = yamldoc["edge_ntp"] 
+        edge_domain_name = yamldoc["edge_domain_name"] 
+        edge_userid = yamldoc["edge_userid"] 
+        edge_password = yamldoc["edge_password"] 
+        edge_ova = yamldoc["edge_ova"] 
 
         edge_ip_pool_start_ip = yamldoc["edge_ip_pool_start_ip"]
         edge_ip_pool_end_ip = yamldoc["edge_ip_pool_end_ip"]
@@ -443,11 +475,12 @@ with open(filename,) as f:
         t0_gateway_static_routenw = yamldoc["t0_gateway_static_routenw"]
         t0_gateway_static_routeaddr = yamldoc["t0_gateway_static_routeaddr"]
 
-      #  install_status = install_nsx_ova(vcenter)
-      #  print (install_status)
-      #  if (install_status != 0) :
-      #      print("Error installing nsx")
-      #      sys.exit(1)
+        if not ping_nsx_manager(nsxmgr):    
+            install_status = install_nsx_ova(vcenter)
+            print (install_status)
+            if (install_status != 0):
+                print("Error installing NSX")
+                sys.exit(1)
 
         # Starting  main loop
         #######################################################################
@@ -460,16 +493,22 @@ with open(filename,) as f:
             print("Waiting for API server to be up. Sleeping for 20 sec...")
             time.sleep(20)
 
-#        get_transport_node_profile()
-#        get_ipaddr_pool()
-#        get_transport_node()
+        install_status = install_edge_ova(vcenter)
+        print (install_status)
+        if (install_status != 0):
+            print("Error installing Edge")
+            sys.exit(1)
+            
+        get_transport_node_profile()
+        get_ipaddr_pool()
+        get_transport_node()
         
         # Get SHA256 thumbpring and register compute manager
-#        thumbprint = get_vcenter_thumbprint(vcenter)
+#        thumbprint = get_server_thumbprint(workload_vc)
 #        if not thumbprint:
 #            print ("Error getting VCenter thumbprint. Check connection")
 #            sys.exit(1)
-#        vcenter_id = register_vcenter(vcenter,vcuserid,vcpassword,thumbprint)
+#        vcenter_id = register_vcenter(workload_vc,workload_vc_uid,workload_vc_pwd,thumbprint)
 #        if not vcenter_id:
 #            print ("Error Registering vcenter")
 #            sys.exit(1)
