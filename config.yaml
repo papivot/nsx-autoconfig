@@ -1,19 +1,50 @@
 # VCenter info goes here
-vcenter: 192.168.6.50
+vcenter: sc3-vc-01-vsk-04.pez.vmware.com
 vcuserid: "administrator@vsphere.local"
-vcpassword: "Passw0rd"
-# NSX Manager info goes here
-nsxmgr: 192.168.6.54
-userid: "admin"
-password: "VMware1!VMware1!"
+vcpassword: "j>QPDtzNT;m6J8p}x,bB"
+node_datacenter: Datacenter
+node_cluster: Cluster
 
-#Edge nw info goes here
+workload_vc: 192.168.6.50
+workload_vc_uid: "administrator@vsphere.local"
+workload_vc_pwd: "VMware1!"
+
+# NSX Manager info goes here
+nsxmgr_hostname: pacific-nsx-ua6 
+nsx_datastore: LUN-NFS
+nsx_network: "DPortGroup-Priv11"
+nsxmgr: 192.168.6.54
+nsx_subnet_mask: 255.255.255.0
+nsx_gateway: 192.168.6.1
+nsx_dns: 192.168.6.1
+nsx_ntp: 10.192.2.5
+nsx_domain_name: env6.lab.local
+userid: admin
+password: "VMware1!VMware1!"
+nsx_ova: 'C:\Users\Administrator\Downloads\GA_Bits\GA_Bits\nsx-unified-appliance-3.0.0.0.0.15946739.ova'
+
+# NSX Edge info goes here
+edge_hostname: pacific-nsx-edge6-new 
+edge_datastore: LUN-NFS
+edge_network: "DPortGroup-Priv11"
+edge_tep_network: "DPortGroup-TEP11"
+edge_ip: 192.168.6.56
+edge_subnet_mask: 255.255.255.0
+edge_gateway: 192.168.6.1
+edge_dns: 192.168.6.1
+edge_ntp: 10.192.2.5
+edge_domain_name: env6.lab.local
+edge_userid: admin
+edge_password: "VMware1!VMware1!"
+edge_ova: 'C:\Users\Administrator\Downloads\GA_Bits\GA_Bits\nsx-edge-3.0.0.0.0.15946012.ova'
+
+#Edge IP Pool info goes here
 edge_ip_pool_start_ip: 192.168.11.20
 edge_ip_pool_end_ip: 192.168.11.30
 edge_ip_pool_def_gw: 192.168.11.1
 edge_ip_pool_def_cidr: 192.168.11.0/24
 edge_tep_vlan: 15
-#ESX Host nw info goes here
+#ESX Host IP Pool info goes here
 host_ip_pool_start_ip: 192.168.12.20
 host_ip_pool_end_ip: 192.168.12.30
 host_ip_pool_def_gw: 192.168.12.1
