@@ -10,10 +10,10 @@ workload_vc_uid: "administrator@vsphere.local"
 workload_vc_pwd: "VMware1!"
 
 # NSX Manager info goes here
-nsxmgr_hostname: pacific-nsx-ua6 
+nsxmgr_hostname: pacific-nsx-ua6a 
 nsx_datastore: LUN-NFS
 nsx_network: "DPortGroup-Priv11"
-nsxmgr: 192.168.6.54
+nsxmgr: 192.168.6.58
 nsx_subnet_mask: 255.255.255.0
 nsx_gateway: 192.168.6.1
 nsx_dns: 192.168.6.1
@@ -24,11 +24,11 @@ password: "VMware1!VMware1!"
 nsx_ova: 'C:\Users\Administrator\Downloads\GA_Bits\GA_Bits\nsx-unified-appliance-3.0.0.0.0.15946739.ova'
 
 # NSX Edge info goes here
-edge_hostname: pacific-nsx-edge6-new 
+edge_hostname: pacific-nsx-edge6a 
 edge_datastore: LUN-NFS
 edge_network: "DPortGroup-Priv11"
 edge_tep_network: "DPortGroup-TEP11"
-edge_ip: 192.168.6.56
+edge_ip: 192.168.6.57
 edge_subnet_mask: 255.255.255.0
 edge_gateway: 192.168.6.1
 edge_dns: 192.168.6.1
@@ -39,25 +39,25 @@ edge_password: "VMware1!VMware1!"
 edge_ova: 'C:\Users\Administrator\Downloads\GA_Bits\GA_Bits\nsx-edge-3.0.0.0.0.15946012.ova'
 
 #Edge IP Pool info goes here
-edge_ip_pool_start_ip: 192.168.11.20
-edge_ip_pool_end_ip: 192.168.11.30
-edge_ip_pool_def_gw: 192.168.11.1
-edge_ip_pool_def_cidr: 192.168.11.0/24
-edge_tep_vlan: 15
+edge_ip_pool_start_ip: 172.30.6.20
+edge_ip_pool_end_ip: 172.30.6.29
+edge_ip_pool_def_gw: 172.30.6.1
+edge_ip_pool_def_cidr: 172.30.6.0/24
+edge_tep_vlan: 0
 #ESX Host IP Pool info goes here
-host_ip_pool_start_ip: 192.168.12.20
-host_ip_pool_end_ip: 192.168.12.30
-host_ip_pool_def_gw: 192.168.12.1
-host_ip_pool_def_cidr: 192.168.12.0/24
-host_tep_vlan: 16
+host_ip_pool_start_ip: 172.30.6.10
+host_ip_pool_end_ip: 172.30.6.19
+host_ip_pool_def_gw: 172.30.6.1
+host_ip_pool_def_cidr: 172.30.6.0/24
+host_tep_vlan: 0
 
 #Transport zone info goes here. Use defaults if possible. 
 #Defaults are  -
-#tz_vlan: nsx-vlan-transportzone
-#tz_overlay: nsx-overlay-transportzone
+tz_vlan: nsx-vlan-transportzone
+tz_overlay: nsx-overlay-transportzone
 #Uncomment to use your own values
-tz_vlan:  TZ-VLAN
-tz_overlay: TZ-Overlay
+#tz_vlan:  TZ-VLAN
+#tz_overlay: TZ-Overlay
 
 edge_cluster: Edge-Cluster-01
 
