@@ -570,8 +570,8 @@ with open(filename,) as f:
                 print("Error installing Edge")
                 sys.exit(1)
             
-        #get_transport_node_profile()
-        #get_ipaddr_pool()
+        get_transport_node_profile()
+        get_ipaddr_pool()
 
         edge_node_id = get_transport_node_id(edge_hostname)
         edge_cluster_id = create_edge_cluster(edge_cluster, edge_node_id)
@@ -584,7 +584,7 @@ with open(filename,) as f:
             print ("Waiting for Edge cluster to get ready")
             time.sleep(30)
 
-        #get_infra_segments()
+        get_infra_segments()
 
         # Configure Pacific segment 
         segment_id = create_infra_segment(segment, tz_vlan, segment_vlanids)
@@ -675,7 +675,7 @@ with open(filename,) as f:
             sys.exit(1)
         print ("Edge cluster created")
 
-        #get_infra_segments()
+        get_infra_segments()
 
         # Configure Pacific segment 
         segment_id = create_infra_segment(segment, tz_vlan, segment_vlanids)

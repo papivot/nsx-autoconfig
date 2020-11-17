@@ -1,55 +1,56 @@
-# VCenter info goes here
-vcenter: sc3-vc-01-vsk-04.pez.vmware.com
+# VCenter info for deployment of NSX Manager and Edge 
+vcenter: 192.168.100.222
 vcuserid: "administrator@vsphere.local"
-vcpassword: "j>QPDtzNT;m6J8p}x,bB"
-node_datacenter: Datacenter
-node_cluster: Cluster
+vcpassword: "VMware1!"
+node_datacenter: pacific-dc
+node_cluster: pacific-cluster
 
-workload_vc: 192.168.6.50
+# Compute Manager vCenter for ESXi hosts to run NSX 
+workload_vc: 192.168.100.222
 workload_vc_uid: "administrator@vsphere.local"
 workload_vc_pwd: "VMware1!"
 
 # NSX Manager info goes here
-nsxmgr_hostname: pacific-nsx-ua6a 
-nsx_datastore: LUN-NFS
-nsx_network: "DPortGroup-Priv11"
-nsxmgr: 192.168.6.58
+nsxmgr_hostname: nsx-auto-mgr
+nsx_datastore: 222-local-500
+nsx_network: "Management-100"
+nsxmgr: 192.168.100.224
 nsx_subnet_mask: 255.255.255.0
-nsx_gateway: 192.168.6.1
-nsx_dns: 192.168.6.1
-nsx_ntp: 10.192.2.5
-nsx_domain_name: env6.lab.local
+nsx_gateway: 192.168.100.1
+nsx_dns: 10.173.13.90
+nsx_ntp: time.vmware.com
+nsx_domain_name: env6.tpmlab.local
 userid: admin
 password: "VMware1!VMware1!"
-nsx_ova: 'C:\Users\Administrator\Downloads\GA_Bits\GA_Bits\nsx-unified-appliance-3.0.0.0.0.15946739.ova'
+nsx_ova: '/Users/kraustvmware.com/Downloads/nsx-unified-appliance-3.1.0.0.0.17107171.ova'
 
 # NSX Edge info goes here
-edge_hostname: pacific-nsx-edge6a 
-edge_datastore: LUN-NFS
-edge_network: "DPortGroup-Priv11"
-edge_tep_network: "DPortGroup-TEP11"
-edge_ip: 192.168.6.57
+edge_hostname: nsx-auto-edge
+edge_datastore: 222-local-500
+edge_network: "Management-100"
+edge_tep_network: "Edge-VTEP-102"
+edge_ip: 192.168.100.224
 edge_subnet_mask: 255.255.255.0
-edge_gateway: 192.168.6.1
-edge_dns: 192.168.6.1
-edge_ntp: 10.192.2.5
-edge_domain_name: env6.lab.local
+edge_gateway: 192.168.100.1
+edge_dns: 10.173.13.90
+edge_ntp: time.vmware.com
+edge_domain_name: env6.tpmlab.local
 edge_userid: admin
 edge_password: "VMware1!VMware1!"
-edge_ova: 'C:\Users\Administrator\Downloads\GA_Bits\GA_Bits\nsx-edge-3.0.0.0.0.15946012.ova'
+edge_ova: '/Users/kraustvmware.com/Downloads/nsx-edge-3.1.0.0.0.17107177.ova'
 
 #Edge IP Pool info goes here
-edge_ip_pool_start_ip: 172.30.6.20
-edge_ip_pool_end_ip: 172.30.6.29
-edge_ip_pool_def_gw: 172.30.6.1
-edge_ip_pool_def_cidr: 172.30.6.0/24
-edge_tep_vlan: 0
+edge_ip_pool_start_ip: 192.168.200.51
+edge_ip_pool_end_ip: 192.168.200.54
+edge_ip_pool_def_gw: 192.168.200.1
+edge_ip_pool_def_cidr: 192.168.200.0/24
+edge_tep_vlan: 102
 #ESX Host IP Pool info goes here
-host_ip_pool_start_ip: 172.30.6.10
-host_ip_pool_end_ip: 172.30.6.19
-host_ip_pool_def_gw: 172.30.6.1
-host_ip_pool_def_cidr: 172.30.6.0/24
-host_tep_vlan: 0
+host_ip_pool_start_ip: 192.168.103.51
+host_ip_pool_end_ip: 192.168.103.59
+host_ip_pool_def_gw: 192.168.103.1
+host_ip_pool_def_cidr: 192.168.103.0/24
+host_tep_vlan: 103
 
 #Transport zone info goes here. Use defaults if possible. 
 #Defaults are  -
@@ -64,10 +65,10 @@ edge_cluster: Edge-Cluster-01
 #TO Config goes here
 segment: WCP-Segment
 segment_vlanids:
-  - 0
+  - 100
 t0_name: WCP-T0-Gateway
-t0_gateway_ip: 192.168.6.57
+t0_gateway_ip: 192.168.100.251
 t0_gateway_cidr: 24
 t0_gateway_static_routename: "WCP-Static-Route"
 t0_gateway_static_routenw: "0.0.0.0/0"
-t0_gateway_static_routeaddr: 192.168.6.1
+t0_gateway_static_routeaddr: 192.168.100.1

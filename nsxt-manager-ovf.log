@@ -1,0 +1,76 @@
+2020-11-17T17:34:06.504-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] [SSL_DB] Using /Users/kraustvmware.com/.ovftool.ssldb as SSL DB
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 2 (SIGINT)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 4 (SIGILL)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 6 (SIGABRT)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 8 (SIGFPE)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 15 (SIGTERM)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 1 (SIGHUP)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 3 (SIGQUIT)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 5 (SIGTRAP)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 9 (SIGKILL)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Subscribing to signal: 13 (SIGPIPE)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Initializing progress
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] OvfTool Version: VMware ovftool 4.3.0 (build-7948156)
+2020-11-17T17:34:06.526-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Using home directory: ./.ovftool
+2020-11-17T17:34:06.534-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Curl Version: 7.58.0-DEV
+2020-11-17T17:34:06.534-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Done initializing libs
+2020-11-17T17:34:06.534-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Determining source
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Determining target
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Getting source
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Parsing URL...
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Constructing URL...
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Parsing URL...
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Constructing URL...
+2020-11-17T17:34:06.535-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Constructing URL...
+2020-11-17T17:34:06.536-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Opening source
+2020-11-17T17:34:06.536-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] OvfPackageSourceBase::Open
+2020-11-17T17:34:06.537-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Initializing OVF rewriter...
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] ApplyOvfTransformations with ovfRewriter started
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] ApplyExtraConfig started
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Setting extra config...
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Filtering extra config
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] The command line option --allowExtraConfig is specified: true
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] The command line option --exportFlags=extraconfig is specified: false
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Whitelist allowed extra config: key=time.synchronize.continue
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Whitelist allowed extra config: key=time.synchronize.restore
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Whitelist allowed extra config: key=time.synchronize.resume.disk
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Whitelist allowed extra config: key=time.synchronize.shrink
+2020-11-17T17:34:06.538-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Whitelist allowed extra config: key=time.synchronize.tools.startup
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=ethernet0.rxDataRingEnabled
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=ethernet1.rxDataRingEnabled
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=ethernet2.rxDataRingEnabled
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=ethernet3.rxDataRingEnabled
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=isolation.tools.diskWiper.disable
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=isolation.tools.memSchedFakeSampleStats.disable
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=isolation.tools.diskShrink.disable
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=isolation.tools.vmxDnDVersionGet.disable
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=isolation.tools.unityActive.disable
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=isolation.tools.guestDnDVersionSet.disable
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=snapshot.maxSnapshots
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] This extra config is allowed from command line option --allowExtraConfig: key=RemoteDisplay.maxConnections
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] OvfPackageSourceBase parsing message bundle
+2020-11-17T17:34:06.539-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Initializing OVF rewriter...
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Validating files
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Getting target
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Constructing URL...
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Connecting to vi host 192.168.100.222
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Skip SSL verification
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=HttpConnectionPool-000000] HttpConnectionPoolImpl created. maxPoolConnections = 20; idleTimeout = 900000000; maxOpenConnections = 20; maxConnectionAge = 0
+2020-11-17T17:34:06.540-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Found local version 6.7 by vmodl name vim.version.version12
+2020-11-17T17:35:23.073-05:00 warning OVFTool[700003336000] [Originator@6876 sub=Default] Failed to connect socket; <io_obj p:0x00007f9f31594850, h:9, <TCP '192.168.0.248 : 49686'>, <TCP '192.168.100.222 : 443'>>, e: 60(Operation timed out)
+2020-11-17T17:35:23.075-05:00 error OVFTool[114A03DC0] [Originator@6876 sub=Default] [FetchOverHttp] Error in sending request - Operation timed out
+2020-11-17T17:35:23.075-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Could not establish connection to remote host 192.168.100.222: Fault cause: vim.fault.HttpFault
+--> 
+2020-11-17T17:35:23.075-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Destruction of ViConnection
+2020-11-17T17:35:23.075-05:00 verbose OVFTool[114A03DC0] [Originator@6876 sub=Default] Backtrace: 
+--> [backtrace begin] product: VMware Fusion, version: e.x.p, build: build-7948156, tag: OVFTool, cpu: x86_64, os: macosx, buildType: release
+--> backtrace[00] libvmacore.dylib[0x0020BFB9]
+--> backtrace[01] libvmacore.dylib[0x0005BDA5]
+--> backtrace[02] libvmacore.dylib[0x00016A0F]
+--> backtrace[03] ovftool[0x000A516A]
+--> backtrace[04] ovftool[0x0011FFC8]
+--> backtrace[05] ovftool[0x001247A6]
+--> backtrace[06] ovftool[0x000C4A03]
+--> backtrace[07] ovftool[0x000C612B]
+--> backtrace[08] libdyld.dylib[0x0001ACC9]
+--> [backtrace end]
